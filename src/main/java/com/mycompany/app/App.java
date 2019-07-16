@@ -14,13 +14,13 @@ public class App
         Scanner in = new Scanner(System.in);
         String path = in.nextLine();
 
-        Test(path, input);
+        createInputList(path, input);
         output = createOutputList(input, output);
 
         writeInfo(output);
     }
 
-    public static void Test(String path, List<ModelEntry> input){
+    public static void createInputList(String path, List<ModelEntry> input){
         try(FileInputStream fstream = new FileInputStream(path)){
             BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
             String strLine;
@@ -48,26 +48,32 @@ public class App
 
     public static ArrayList<ModelEntry> createOutputList(ArrayList<ModelEntry> input, ArrayList<ModelEntry> output) {
 
-        boolean flag = false;
+        boolean checkShoterService = false;
 
         ArrayList<ModelEntry> temp = input.stream()
-                                          .filter(entry -> ((entry.getFinishTime().getTimeInMillis()-entry.getStartTime().getTimeInMillis())/1000) <= 3600)
+                                          .filter(entry -> ((entry.getFinishTime().getTimeInMillis()
+                                                  -entry.getStartTime().getTimeInMillis())/1000) <= 3600)
                                           .sorted(Comparator.comparing(ModelEntry::getStartTime))
                                           .collect(Collectors.toCollection(ArrayList::new));
 
         for(int i=0; i<temp.size(); i++){
             if((i+1)<temp.size()) {
-                if(flag == true){
-                    if((temp.get(i).getFinishTime().getTimeInMillis() <= output.get(output.size()-1).getFinishTime().getTimeInMillis() && temp.get(i).getStartTime().getTimeInMillis() > output.get(output.size()-1).getStartTime().getTimeInMillis()) |
-                            (temp.get(i).getFinishTime().getTimeInMillis() >= output.get(output.size()-1).getFinishTime().getTimeInMillis() && temp.get(i).getStartTime().getTimeInMillis() < output.get(output.size()-1).getStartTime().getTimeInMillis())){
+                if(checkShoterService == true){
+                    if ((temp.get(i).getFinishTime().getTimeInMillis() <= output.get(output.size()-1).getFinishTime().getTimeInMillis() &&
+                            temp.get(i).getStartTime().getTimeInMillis() > output.get(output.size()-1).getStartTime().getTimeInMillis()
+                         ) |
+                        (temp.get(i).getFinishTime().getTimeInMillis() >= output.get(output.size()-1).getFinishTime().getTimeInMillis() &&
+                            temp.get(i).getStartTime().getTimeInMillis() < output.get(output.size()-1).getStartTime().getTimeInMillis())) {
+
                         output.set(output.size()-1, temp.get(i));
                     } else {
-                        flag = false;
+                        checkShoterService = false;
                         i--;
                         continue;
                     }
                 }
-                else if (temp.get(i).getStartTime().equals(temp.get(i+1).getStartTime()) == true && temp.get(i).getFinishTime().equals(temp.get(i+1).getFinishTime()) == true) {
+                else if (temp.get(i).getStartTime().equals(temp.get(i+1).getStartTime()) == true &&
+                            temp.get(i).getFinishTime().equals(temp.get(i+1).getFinishTime()) == true) {
 
                     if (temp.get(i).getNameCompany().equals("Posh")) {
                         output.add(temp.get(i));
@@ -87,16 +93,20 @@ public class App
                         i++;
                     }
                 }
-                else if ((temp.get(i).getFinishTime().getTimeInMillis() <= temp.get(i+1).getFinishTime().getTimeInMillis() && temp.get(i).getStartTime().getTimeInMillis() > temp.get(i+1).getStartTime().getTimeInMillis()) |
-                        (temp.get(i).getFinishTime().getTimeInMillis() >= temp.get(i+1).getFinishTime().getTimeInMillis() && temp.get(i).getStartTime().getTimeInMillis() < temp.get(i+1).getStartTime().getTimeInMillis())) {
-                   if(temp.get(i).getStartTime().getTimeInMillis() > temp.get(i+1).getStartTime().getTimeInMillis()){
+                else if ((temp.get(i).getFinishTime().getTimeInMillis() <= temp.get(i+1).getFinishTime().getTimeInMillis()
+                            && temp.get(i).getStartTime().getTimeInMillis() > temp.get(i+1).getStartTime().getTimeInMillis()
+                          ) |
+                          (temp.get(i).getFinishTime().getTimeInMillis() >= temp.get(i+1).getFinishTime().getTimeInMillis()
+                            && temp.get(i).getStartTime().getTimeInMillis() < temp.get(i+1).getStartTime().getTimeInMillis())) {
+
+                    if(temp.get(i).getStartTime().getTimeInMillis() > temp.get(i+1).getStartTime().getTimeInMillis()){
                        output.add(temp.get(i));
                         i++;
-                       flag = true;
+                        checkShoterService = true;
                    } else {
                        output.add(temp.get(i+1));
                        i++;
-                       flag = true;
+                       checkShoterService = true;
                    }
                 }
 
@@ -116,21 +126,20 @@ public class App
 
     public static void writeInfo(ArrayList<ModelEntry> output){
 
-        boolean flag = true;
+        boolean firstTimeGrotty = true;
 
         try(FileWriter outputFile = new FileWriter("C:\\Users\\Public\\output.txt")){
             for(ModelEntry i : output) {
                 if (i.getNameCompany().equals("Posh") == true) {
                     outputFile.write(i.toString() + "\r\n");
                 } else {
-                    if(flag == true){
+                    if(firstTimeGrotty == true){
                         outputFile.write("\r\n");
-                        flag = false;
+                        firstTimeGrotty = false;
                     }
                     outputFile.write(i.toString() + "\r\n");
                 }
             }
-
         } catch (IOException e){
             System.out.println("Error: File wasn't created");
         }
