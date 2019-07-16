@@ -60,10 +60,10 @@ public class App
             if((i+1)<temp.size()) {
                 if(checkShoterService == true){
                     if ((temp.get(i).getFinishTime().getTimeInMillis() <= output.get(output.size()-1).getFinishTime().getTimeInMillis() &&
-                            temp.get(i).getStartTime().getTimeInMillis() > output.get(output.size()-1).getStartTime().getTimeInMillis()
+                            temp.get(i).getStartTime().getTimeInMillis() >= output.get(output.size()-1).getStartTime().getTimeInMillis()
                          ) |
                         (temp.get(i).getFinishTime().getTimeInMillis() >= output.get(output.size()-1).getFinishTime().getTimeInMillis() &&
-                            temp.get(i).getStartTime().getTimeInMillis() < output.get(output.size()-1).getStartTime().getTimeInMillis())) {
+                            temp.get(i).getStartTime().getTimeInMillis() <= output.get(output.size()-1).getStartTime().getTimeInMillis())) {
 
                         output.set(output.size()-1, temp.get(i));
                     } else {
@@ -88,9 +88,11 @@ public class App
                     if(temp.get(i).getFinishTime().getTimeInMillis() < temp.get(i+1).getFinishTime().getTimeInMillis()) {
                         output.add(temp.get(i));
                         i++;
+                        checkShoterService = true;
                     } else {
                         output.add(temp.get(i+1));
                         i++;
+                        checkShoterService = true;
                     }
                 }
                 else if ((temp.get(i).getFinishTime().getTimeInMillis() <= temp.get(i+1).getFinishTime().getTimeInMillis()
