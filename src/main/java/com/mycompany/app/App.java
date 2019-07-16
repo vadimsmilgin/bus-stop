@@ -51,6 +51,7 @@ public class App
         boolean checkShoterService = false;
 
         ArrayList<ModelEntry> temp = input.stream()
+                                          .distinct()
                                           .filter(entry -> ((entry.getFinishTime().getTimeInMillis()
                                                   -entry.getStartTime().getTimeInMillis())/1000) <= 3600)
                                           .sorted(Comparator.comparing(ModelEntry::getStartTime))
